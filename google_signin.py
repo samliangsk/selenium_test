@@ -26,7 +26,7 @@ def pause(max_delay: int = 1000):
 # # options.add_experimental_option("useAutomationExtension", False)
 # # options.add_experimental_option('excludeSwitches', ['enable-automation'])
 # # options.add_experimental_option("prefs", {
-# #             "profile.default_content_setting_values.media_stream_mic": 1,
+        #     "profile.default_content_setting_values.media_stream_mic": 1,
 # #             "profile.default_content_setting_values.media_stream_camera": 1,
 # #             "profile.default_content_setting_values.geolocation": 0,
 # #             "profile.default_content_setting_values.notifications": 1
@@ -48,8 +48,34 @@ def pause(max_delay: int = 1000):
 # # options.add_argument("--headless")
 # options.add_argument('--allow-running-insecure-content')
 
+from seleniumbase import BaseCase
+from seleniumbase.core.browser_launcher import _set_chrome_options
+class OverriddenBaseCase(BaseCase):
+        pass
+#     def get_new_driver(self, *args, **kwargs):
+#         """ This method overrides get_new_driver() from BaseCase. """
+#         options: webdriver.ChromeOptions = _set_chrome_options()
+#         options.add_experimental_option(
+#             "excludeSwitches", ["enable-automation"]
+#         )
+#         options.add_experimental_option("useAutomationExtension", False)
+#         if self.headless:
+#             options.add_argument("--headless")
+#         return webdriver.Chrome(options=options)
+
+
 # browser = uc.Chrome(options=options)
-with SB(uc=True,headless=True) as browser:
+
+
+browser: BaseCase
+# with SB(uc=True,headless=True) as browser:
+try:
+        browser = OverriddenBaseCase()
+        browser.browser = "chrome"
+        browser.headless = True
+        browser.headed = False
+        browser.undetectable = True
+        browser.setUp()
 # browser.get("https://stackoverflow.com")
         browser.get("chrome://webrtc-internals")
         time.sleep(1)
@@ -76,6 +102,5 @@ with SB(uc=True,headless=True) as browser:
         browser.get_title()
         
         browser.close()
-
-
-
+finally:
+      browser.tearDown()
