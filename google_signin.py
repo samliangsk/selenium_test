@@ -12,6 +12,7 @@ import random
 import os
 username = os.environ.get('GOOGLE_ACCT_USER')
 password = os.environ.get('GOOGLE_ACCT_PASS')
+phone = os.environ.get('GOOGLE_ACCT_PHONE')
 def type(elem: WebElement, text: str) -> None:
 
         for l in text:
@@ -53,7 +54,13 @@ with SB(uc=True,headless=True) as browser:
         browser.save_screenshot('000.png')
 
         browser.type("#password > div.aCsJod.oJeWuf > div > div.Xb9hP > input", password+'\n')
+        time.sleep(5)
         
+        browser.click("#view_container > div.zWl5kd > div.DRS7Fe.bxPAYd.k6Zj8d > div.pwWryf.bxPAYd > div.Wxwduf.Us7fWe.JhUD8d > div.WEQkZc > div.bCAAsb > form > span > section.aTzEhb.S7S4N > div.CxRgyd > div > div.pQ0lne > ul.OVnw0d > li.JDAKTe.cd29Sd.zpCp3.SmR8 > div.lCoei.YZVTmd.SmR8[data-challengeindex=\"2\"]")
+        time.sleep(5)
+        browser.type("#phoneNumberId", phone+'\n')
+        time.sleep(20)
+        browser.get('https://meet.google.com/new/')
         time.sleep(10)
         browser.save_screenshot('001.png')
         
