@@ -28,7 +28,7 @@ def pause(max_delay: int = 1000):
 
 browser: BaseCase
 with SB(uc=True) as browser:
-        subprocess.call(['vid_file=./fake_video.mp4\nsudo modprobe -r v4l2loopback\nsudo modprobe v4l2loopback devices=1 device_nr=1 card_label=\"VirtCam\" exclusive_caps=1 max_buffers=2\nffmpeg -stream_loop -1 -re -i $vid_file -c copy -f v4l2 /dev/video2'])
+        subprocess.call(['vid_file=','./fake_video.mp4','\nsudo modprobe -r v4l2loopback\nsudo modprobe v4l2loopback devices=1 device_nr=1 card_label=\"VirtCam\" exclusive_caps=1 max_buffers=2\nffmpeg -stream_loop -1 -re -i $vid_file -c copy -f v4l2 /dev/video2'])
         browser.driver.execute_cdp_cmd(
                 "Browser.grantPermissions",
                 {
@@ -79,5 +79,5 @@ with SB(uc=True) as browser:
         time.sleep(1)
         browser.click_xpath('/html/body/p/details/div/div[1]/a/button')
         time.sleep(5)
-        subprocess.call('v4l2loopback-ctl delete /dev/video2')
+        subprocess.call(['v4l2loopback-ctl delete /dev/video2'])
         
