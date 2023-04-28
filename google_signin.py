@@ -28,7 +28,7 @@ def pause(max_delay: int = 1000):
 # run on machines out of docker sudo modprobe -r v4l2loopback\nsudo modprobe v4l2loopback devices=1 device_nr=1 card_label=\"VirtCam\" exclusive_caps=1 max_buffers=2\n
 browser: BaseCase
 with SB(uc=True) as browser:
-        subprocess.call(['vid_file=','./fake_video.mp4','\nffmpeg -stream_loop -1 -re -i $vid_file -c copy -f v4l2 /dev/video2'])
+        subprocess.call(['vid_file=./fake_video.mp4\nffmpeg -stream_loop -1 -re -i $vid_file -c copy -f v4l2 /dev/video2'])
         browser.driver.execute_cdp_cmd(
                 "Browser.grantPermissions",
                 {
