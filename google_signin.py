@@ -25,10 +25,10 @@ def pause(max_delay: int = 1000):
 
 
 
-# run on machines out of docker sudo modprobe -r v4l2loopback\nsudo modprobe v4l2loopback devices=1 device_nr=1 card_label=\"VirtCam\" exclusive_caps=1 max_buffers=2\n
+# run on machines out of docker sudo modprobe -r v4l2loopback\nsudo modprobe v4l2loopback devices=1 video_nr=60 card_label=\"VirtCam\" exclusive_caps=1 max_buffers=2\n
 browser: BaseCase
 with SB(uc=True) as browser:
-        subprocess.call(['vid_file=./fake_video.mp4\nffmpeg -stream_loop -1 -re -i $vid_file -c copy -f v4l2 /dev/video2'])
+        subprocess.call(['ffmpeg -stream_loop -1 -re -i ./fake_video.flv -c copy -f v4l2 /dev/video60'])
         browser.driver.execute_cdp_cmd(
                 "Browser.grantPermissions",
                 {
@@ -39,6 +39,7 @@ with SB(uc=True) as browser:
         )
         browser.get("chrome://webrtc-internals")
         time.sleep(1)
+        print('opening webRTC collection page')
         browser.open_new_window()
         
         # login
@@ -46,7 +47,10 @@ with SB(uc=True) as browser:
         time.sleep(2)
         browser.type("#identifierId", username+'\n')
         time.sleep(3)
-        browser.type("#password > div.aCsJod.oJeWuf > div > div.Xb9hP > input", password+'\n')
+        try:
+                browser.type("#password > div.aCsJod.oJeWuf > div > div.Xb9hP > input", password+'\n')
+        except common.exceptions.NoSuchElementException:
+                pass
         time.sleep(5)
         browser.save_screenshot('000.png')
         
@@ -79,5 +83,5 @@ with SB(uc=True) as browser:
         time.sleep(1)
         browser.click_xpath('/html/body/p/details/div/div[1]/a/button')
         time.sleep(5)
-        subprocess.call(['v4l2loopback-ctl delete /dev/video2'])
+        # subprocess.call(['v4l2loopback-ctl delete /dev/video2'])
         
