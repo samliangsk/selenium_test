@@ -7,6 +7,7 @@ from seleniumbase import SB, BaseCase
 import time
 import random
 import os
+import signal
 import subprocess
 
 username = os.environ.get('GOOGLE_ACCT_USER')
@@ -25,10 +26,10 @@ def pause(max_delay: int = 1000):
 
 
 
-# run on machines out of docker sudo modprobe -r v4l2loopback\nsudo modprobe v4l2loopback devices=1 video_nr=60 card_label=\"VirtCam\" exclusive_caps=1 max_buffers=2\n
+# run on machines out of docker sudo modprobe -r v4l2loopback\nsudo modprobe v4l2loopback devices=2 video_nr=0,64 exclusive_caps=1,1\n
 browser: BaseCase
-with SB(uc=True) as browser:
-        subprocess.Popen('ffmpeg -hide_banner -loglevel error -stream_loop -1 -re -i ./fake_video.flv -c copy -f v4l2 /dev/video0',shell=True)
+with SB(uc=True,headless=False) as browser:
+        prog = subprocess.Popen('ffmpeg -hide_banner -loglevel error -stream_loop -1 -re -i ./fake_video.flv -f v4l2 /dev/video64',shell=True)
         browser.driver.execute_cdp_cmd(
                 "Browser.grantPermissions",
                 {
@@ -83,5 +84,6 @@ with SB(uc=True) as browser:
         time.sleep(1)
         browser.click_xpath('/html/body/p/details/div/div[1]/a/button')
         time.sleep(5)
+        os.kill(prog.pid, signal.SIGKILL)
         # subprocess.call(['v4l2loopback-ctl delete /dev/video2'])
         
