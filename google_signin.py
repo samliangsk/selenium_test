@@ -84,6 +84,7 @@ with SB(uc=True,headless=False) as browser:
         time.sleep(1)
         browser.click_xpath('/html/body/p/details/div/div[1]/a/button')
         time.sleep(5)
-        os.kill(prog.pid, signal.SIGKILL)
+        # os.kill(prog.pid, signal.SIGKILL)
+        os.killpg(os.getpgid(prog.pid), signal.SIGTERM)
         # subprocess.call(['v4l2loopback-ctl delete /dev/video2'])
         
