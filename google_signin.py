@@ -11,30 +11,26 @@ import signal
 import subprocess
 import sys
 
+# take Google Account info from the system defined by users
+
 username = os.environ.get('GOOGLE_ACCT_USER')
 password = os.environ.get('GOOGLE_ACCT_PASS')
 phone = os.environ.get('GOOGLE_ACCT_PHONE')
-def type(elem: WebElement, text: str) -> None:
 
-        for l in text:
-                elem.send_keys(l)
-                pause(30)
-
-def pause(max_delay: int = 1000):
-
-        time.sleep(random.triangular(100, max_delay) / 1000)
         
 def start_ffmpeg():
         prog = subprocess.Popen('ffmpeg -hide_banner -loglevel error -stream_loop -1 -re -i ./fake_video.mp4 -f v4l2 /dev/video64',shell=True)
         return prog
 
-# run on machines out of docker sudo modprobe -r v4l2loopback\nsudo modprobe v4l2loopback devices=2 video_nr=0,64 exclusive_caps=1,1\n
+
 def main():
         browser: BaseCase
         with SB(uc=True) as browser:
                 
+                # store program info for later termination of ffmpeg, or it might keep running in the background
                 prog = start_ffmpeg()
                 
+                # set browser options to default microphone and camera to on
                 browser.driver.execute_cdp_cmd(
                         "Browser.grantPermissions",
                         {
@@ -43,29 +39,38 @@ def main():
                                         "videoCapturePanTiltZoom"]
                         },
                 )
+                
+                # open WebRTC page which will later dump WebRTC data
                 browser.get("chrome://webrtc-internals")
                 time.sleep(1)
-                print('opening webRTC collection page')
+                
+                
+                # open a new window to join the meeting
                 browser.open_new_window()
+                
                 
                 # login
                 browser.get('http://accounts.google.com')
                 time.sleep(2)
                 browser.type("#identifierId", username+'\n')
                 time.sleep(3)
+                # enter the password, skip it if automatically logined
                 try:
                         browser.type("#password > div.aCsJod.oJeWuf > div > div.Xb9hP > input", password+'\n')
                 except common.exceptions.NoSuchElementException:
                         pass
                 
-                time.sleep(5)
+                # wait for a while for the page to load and take a screenshot to verify the current progress
+                time.sleep(3)
                 browser.save_screenshot('000.png')
                 
-                # try going around the security check
+                # try enter phone number to pass verification, skip if automatically logined
                 try:
                         browser.click("#view_container > div.zWl5kd > div.DRS7Fe.bxPAYd.k6Zj8d > div.pwWryf.bxPAYd > div.Wxwduf.Us7fWe.JhUD8d > div.WEQkZc > div.bCAAsb > form > span > section.aTzEhb.S7S4N > div.CxRgyd > div > div.pQ0lne > ul.OVnw0d > li.JDAKTe.cd29Sd.zpCp3.SmR8 > div.lCoei.YZVTmd.SmR8[data-challengeindex=\"2\"]")
+                        
                         time.sleep(5)
                         browser.save_screenshot('001.png')
+                        
                         browser.type("#phoneNumberId", phone+'\n')
                         time.sleep(20)
                 except common.exceptions.NoSuchElementException:
